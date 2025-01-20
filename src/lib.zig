@@ -5143,19 +5143,9 @@ pub const CompileOptions = struct {
 };
 
 /// Compile luau source into bytecode, return callee owned buffer allocated through the given allocator.
-pub fn compile(allocator: Allocator, source: []const u8, options: CompileOptions) ![]const u8 {
+pub fn compile(allocator: Allocator, source: []const u8, opts: CompileOptions) ![]const u8 {
     var size: usize = 0;
 
-    var opts = c.lua_CompileOptions{
-        .optimizationLevel = options.optimization_level,
-        .debugLevel = options.debug_level,
-        .typeInfoLevel = options.type_info_level,
-        .coverageLevel = options.coverage_level,
-        .vectorLib = options.vector_lib,
-        .vectorCtor = options.vector_ctor,
-        .mutableGlobals = options.mutable_globals,
-        .userdataTypes = options.userdata_types,
-    };
     const bytecode = c.luau_compile(source.ptr, source.len, &opts, &size);
     if (bytecode == null) return error.OutOfMemory;
     defer zig_luau_free(bytecode);
